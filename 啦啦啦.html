@@ -1,4 +1,5 @@
 
+
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
@@ -189,6 +190,7 @@ h2{
   height:100%;
   object-fit:cover;
   display:block;
+  cursor:zoom-in;
 }
 
 .photo-caption{
@@ -200,6 +202,7 @@ h2{
   text-align:center;
   font-size:12px;
   background:linear-gradient(transparent,#21132cbb);
+  pointer-events:none;
 }
 
 .photo-fallback{
@@ -316,6 +319,74 @@ nav button.selected{
   text-shadow:0 0 12px #ff9de0;
 }
 
+/* 照片放大功能 */
+.lightbox{
+  position:fixed;
+  inset:0;
+  z-index:99999;
+  display:none;
+  align-items:center;
+  justify-content:center;
+  padding:55px 55px;
+  background:rgba(8,5,20,.94);
+}
+
+.lightbox.show{
+  display:flex;
+}
+
+.lightbox img{
+  display:block;
+  max-width:100%;
+  max-height:82vh;
+  width:auto;
+  height:auto;
+  object-fit:contain;
+  border-radius:14px;
+  box-shadow:0 0 35px #00000088;
+  cursor:default;
+}
+
+.lightbox button{
+  position:absolute;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  width:43px;
+  height:43px;
+  padding:0;
+  margin:0;
+  border:1px solid #ffffff66;
+  border-radius:50%;
+  color:white;
+  background:#ffffff25;
+  font-size:27px;
+  line-height:1;
+  z-index:2;
+}
+
+.lightbox-close{
+  top:16px;
+  right:16px;
+}
+
+.lightbox-prev{
+  left:10px;
+  top:50%;
+  transform:translateY(-50%);
+}
+
+.lightbox-next{
+  right:10px;
+  top:50%;
+  transform:translateY(-50%);
+}
+
+.lightbox-prev:active,
+.lightbox-next:active{
+  transform:translateY(-50%) scale(.94);
+}
+
 @media(max-height:650px){
   header{padding:0 0 6px}
   h1{margin:5px 0}
@@ -324,6 +395,17 @@ nav button.selected{
   .days{font-size:43px}
   .photo{height:95px}
   .note{padding:12px}
+}
+
+@media(max-width:400px){
+  .lightbox{
+    padding:50px 45px;
+  }
+
+  .lightbox img{
+    max-width:100%;
+    max-height:78vh;
+  }
 }
 </style>
 </head>
@@ -394,8 +476,6 @@ nav button.selected{
       <img src="./54089.jpeg" alt="我们的照片">
       <div class="photo-caption">只属于我们</div>
     </div>
-
- 
 
   </div>
 
@@ -503,6 +583,14 @@ nav button.selected{
 
 </div>
 
+<!-- 照片放大窗口 -->
+<div class="lightbox" id="lightbox">
+  <button class="lightbox-close" id="lightboxClose" aria-label="关闭">×</button>
+  <button class="lightbox-prev" id="lightboxPrev" aria-label="上一张">‹</button>
+  <img id="lightboxImage" src="" alt="放大照片">
+  <button class="lightbox-next" id="lightboxNext" aria-label="下一张">›</button>
+</div>
+
 <script>
 function go(id,button){
   document.querySelectorAll('.page').forEach(p=>{
@@ -604,8 +692,77 @@ document.getElementById('wishInput').addEventListener('keydown',e=>{
 });
 
 renderWishes();
+
+/* 照片点击放大 */
+(function(){
+  const photos=Array.from(
+    document.querySelectorAll('.grid .photo img')
+  );
+
+  const box=document.getElementById('lightbox');
+  const large=document.getElementById('lightboxImage');
+  const closeBtn=document.getElementById('lightboxClose');
+  const prevBtn=document.getElementById('lightboxPrev');
+  const nextBtn=document.getElementById('lightboxNext');
+
+  let current=0;
+
+  function showPhoto(index){
+    if(photos.length===0) return;
+
+    current=(index+photos.length)%photos.length;
+
+    large.src=photos[current].src;
+    large.alt=photos[current].alt||'放大照片';
+
+    box.classList.add('show');
+    document.body.style.overflow='hidden';
+  }
+
+  function closePhoto(){
+    box.classList.remove('show');
+    document.body.style.overflow='';
+  }
+
+  photos.forEach((photo,index)=>{
+    photo.addEventListener('click',()=>{
+      showPhoto(index);
+    });
+  });
+
+  closeBtn.addEventListener('click',closePhoto);
+
+  prevBtn.addEventListener('click',()=>{
+    showPhoto(current-1);
+  });
+
+  nextBtn.addEventListener('click',()=>{
+    showPhoto(current+1);
+  });
+
+  box.addEventListener('click',e=>{
+    if(e.target===box){
+      closePhoto();
+    }
+  });
+
+  document.addEventListener('keydown',e=>{
+    if(!box.classList.contains('show')) return;
+
+    if(e.key==='Escape'){
+      closePhoto();
+    }
+
+    if(e.key==='ArrowLeft'){
+      showPhoto(current-1);
+    }
+
+    if(e.key==='ArrowRight'){
+      showPhoto(current+1);
+    }
+  });
+})();
 </script>
 
 </body>
 </html>
-
