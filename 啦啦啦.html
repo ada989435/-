@@ -1,5 +1,6 @@
 
 
+
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
@@ -319,7 +320,7 @@ nav button.selected{
   text-shadow:0 0 12px #ff9de0;
 }
 
-/* 照片放大功能 */
+/* 照片放大窗口 */
 .lightbox{
   position:fixed;
   inset:0;
@@ -344,7 +345,6 @@ nav button.selected{
   object-fit:contain;
   border-radius:14px;
   box-shadow:0 0 35px #00000088;
-  cursor:default;
 }
 
 .lightbox button{
@@ -398,10 +398,7 @@ nav button.selected{
 }
 
 @media(max-width:400px){
-  .lightbox{
-    padding:50px 45px;
-  }
-
+  .lightbox{padding:50px 45px}
   .lightbox img{
     max-width:100%;
     max-height:78vh;
@@ -438,7 +435,7 @@ nav button.selected{
 
   <div class="counter">
     <small>我们已经相爱</small>
-    <div class="days">106</div>
+    <div class="days" id="loveDays">106</div>
     <small>天·直到永远</small>
   </div>
 
@@ -449,7 +446,6 @@ nav button.selected{
 
 </section>
 
-<!-- 照片墙 -->
 <!-- 照片墙 -->
 <section class="page" id="photos">
 
@@ -592,6 +588,27 @@ nav button.selected{
 </div>
 
 <script>
+
+/* 相爱天数自动计算 */
+function updateLoveDays(){
+  const start=Date.UTC(2026,6,23);
+  const now=new Date();
+
+  const today=Date.UTC(
+    now.getFullYear(),
+    now.getMonth(),
+    now.getDate()
+  );
+
+  const days=Math.floor((today-start)/86400000)+1;
+
+  document.getElementById('loveDays').textContent=
+    Math.max(0,days);
+}
+
+updateLoveDays();
+
+
 function go(id,button){
   document.querySelectorAll('.page').forEach(p=>{
     p.classList.remove('active');
@@ -762,6 +779,7 @@ renderWishes();
     }
   });
 })();
+
 </script>
 
 </body>
