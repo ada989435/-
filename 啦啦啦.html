@@ -1,6 +1,3 @@
-
-
-
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
@@ -332,9 +329,7 @@ nav button.selected{
   background:rgba(8,5,20,.94);
 }
 
-.lightbox.show{
-  display:flex;
-}
+.lightbox.show{display:flex}
 
 .lightbox img{
   display:block;
@@ -365,22 +360,9 @@ nav button.selected{
   z-index:2;
 }
 
-.lightbox-close{
-  top:16px;
-  right:16px;
-}
-
-.lightbox-prev{
-  left:10px;
-  top:50%;
-  transform:translateY(-50%);
-}
-
-.lightbox-next{
-  right:10px;
-  top:50%;
-  transform:translateY(-50%);
-}
+.lightbox-close{top:16px;right:16px}
+.lightbox-prev{left:10px;top:50%;transform:translateY(-50%)}
+.lightbox-next{right:10px;top:50%;transform:translateY(-50%)}
 
 .lightbox-prev:active,
 .lightbox-next:active{
@@ -435,7 +417,7 @@ nav button.selected{
 
   <div class="counter">
     <small>我们已经相爱</small>
-    <div class="days" id="loveDays">106</div>
+    <div class="days" id="loveDays">计算中...</div>
     <small>天·直到永远</small>
   </div>
 
@@ -591,19 +573,22 @@ nav button.selected{
 
 /* 相爱天数自动计算 */
 function updateLoveDays(){
-  const start=Date.UTC(2026,9,23);
-  const now=new Date();
+  const start = new Date(2026, 6, 23);
+  start.setHours(0, 0, 0, 0);
 
-  const today=Date.UTC(
+  const now = new Date();
+  const today = new Date(
     now.getFullYear(),
     now.getMonth(),
     now.getDate()
   );
 
-  const days=Math.floor((today-start)/86400000)+1;
+  const days = Math.floor(
+    (today.getTime() - start.getTime()) / 86400000
+  ) + 1;
 
-  document.getElementById('loveDays').textContent=
-    Math.max(0,days);
+  document.getElementById('loveDays').textContent =
+    Math.max(0, days);
 }
 
 updateLoveDays();
